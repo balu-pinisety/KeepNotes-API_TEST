@@ -2,15 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Cache;
+use App\Exceptions\Handler;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use App\Models\User;
 use App\Models\PasswordReset;
 use App\Http\Requests\SendEmailRequest;
 use Exception;
-use Illuminate\Support\Facades\Validator as FacadesValidator;
+use Illuminate\Support\Facades\Validator;
 use Tymon\JWTAuth\Facades\JWTAuth;
-use Validator;
+//use Validator;
 use Auth;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * @since 
@@ -35,7 +39,7 @@ class AuthController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function register(Request $request) 
+    public function register(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'firstname' => 'required|string|between:2,20',
@@ -47,16 +51,25 @@ class AuthController extends Controller
 
         if($validator->fails())
         {
+            Log::warning('Given Invalid Credentials for register');
             return response()->json($validator->errors()->toJson(), 400);
         }
+
+        $value = Cache::remember('users', 1, function () {
+            return User::all();
+        });
 
         $user = User::where('email', $request->email)->first();
         
         if ($user)
         {
-            return response()->json([
-                'message' => 'The email has already been taken'
-            ],401);
+            Log::alert('Existing Mail given for Register',['Email'=>$request->email]);
+
+            throw new RepeatedMailException();
+
+            // return response()->json([
+            //     'message' => 'The email has already been taken'
+            // ],401);
         }
 
         $user = User::create(array_merge(
@@ -64,6 +77,7 @@ class AuthController extends Controller
                     ['password' => bcrypt($request->password)]
                 ));
 
+        Log::info('New user Regitered',['Email'=>$request->email]);
         return response()->json([
             'message' => 'User successfully registered',
             'user' => $user
@@ -84,22 +98,45 @@ class AuthController extends Controller
 
         if ($validator->fails()) 
         {
+            Log::warning('Given Invalid Credentials to login');
             return response()->json($validator->errors(), 422);
         }
 
-         $user = User::where('email', $request->email)->first();
+        //$user = User::where('email', $request->email)->first();
 
-         if(!$user)
-         {
-             return response()->json([
-                 'message' => 'we can not find the user with that e-mail address'
-             ], 401);
-         }
+        // if(!$user)
+        // {
+        //     Log::alert('Unregistered Mail given for Login',['Email'=>$request->email]);
+        //     return response()->json([
+        //         'message' => 'we can not find the user with that e-mail address'
+        //     ], 401);
+        // }
 
-         if (!$token = auth()->attempt($validator->validated()))
-         {
-             return response()->json(['error' => 'Unauthorized'], 401);
-         }
+        //  try 
+        // {
+            $user = User::where('email', $request->email)->first(); 
+            
+            if(!$user)
+            {
+                throw new NotFoundHttpException();
+            }            
+        // }
+        // catch (NotFoundHttpException $ex)
+        // {
+        //     return $ex->getMessage();
+        // }
+
+        if (!$token = auth()->attempt($validator->validated()))
+        {
+            Log::alert('Wrong Password given for Login',['Email'=>$request->email]);
+            return response()->json(['error' => 'Incorrect Password'], 404);
+        }
+
+        Log::info('User Logged in',['Email'=>$request->email]);
+
+        $value = Cache::remember('users', 1, function () {
+            return User::all();
+        });
 
         return response()->json([ 
             'message' => 'Login successfull',  
@@ -135,6 +172,7 @@ class AuthController extends Controller
             ], 404);
         }
 
+    
         return response()->json([
             'message' => 'User successfully signed out'
         ],201);

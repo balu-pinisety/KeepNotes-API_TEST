@@ -52,10 +52,10 @@ class LabelTest extends TestCase
     {
         $response = $this->withHeaders([
             'Content-Type' => 'Application/json',
-            'Authorization' => 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC8xMjcuMC4wLjE6ODAwMFwvYXBpXC9hdXRoXC9sb2dpbiIsImlhdCI6MTYzMzQxMDk4MCwiZXhwIjoxNjMzNDE0NTgwLCJuYmYiOjE2MzM0MTA5ODAsImp0aSI6Ik9wdGpjWVFTQWxTUUZoYkIiLCJzdWIiOjIsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjcifQ.CAiGPPjCUjSG7qzhn8ncNiBIRCLdntOKbMkFoyBZkb8'
+            'Authorization' => 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC8xMjcuMC4wLjE6ODAwMFwvYXBpXC9hdXRoXC9sb2dpbiIsImlhdCI6MTYzMzQxODg0MywiZXhwIjoxNjMzNDIyNDQzLCJuYmYiOjE2MzM0MTg4NDMsImp0aSI6ImNjcDVSaVNjUmJoMmVuekkiLCJzdWIiOjEsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjcifQ.sjGvulVsqENxbngf_2uaCG7xBSOhhmUptkfLbsZ9pxc'
         ])->json('PUT', '/api/auth/updatelabel', 
         [
-            "id" => "7",
+            "id" => "8",
             "labelname" => "label update test"
         ]);
         $response->assertStatus(201)->assertJson(['message' => 'Label updated Sucessfully']);

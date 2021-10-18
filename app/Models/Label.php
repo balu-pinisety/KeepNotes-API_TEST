@@ -11,4 +11,5 @@ class Label extends Model
 
     protected $table="labels";
     protected $fillable = ['labelname'];
+
 }

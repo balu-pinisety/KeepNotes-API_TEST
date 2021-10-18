@@ -31,7 +31,7 @@ class ForgotPasswordController extends Controller
         if (!$user)
         {
             return response()->json([
-                'message' => "we can not find a user with that email address"
+                'message' => 'we can not find a user with that email address'
             ],404);
         }
         

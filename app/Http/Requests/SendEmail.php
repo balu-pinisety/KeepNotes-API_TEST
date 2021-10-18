@@ -16,7 +16,7 @@ class SendEmail
 
         $subject = 'Reset-Password';
 
-        $data = 'Click on the below link to Proceed to reset'.$token;
+        $data = 'Token to reset password <br>'.$token;
             
         require '..\vendor\autoload.php';
         $mail = new PHPMailer(true);
@@ -33,11 +33,46 @@ class SendEmail
             $mail->isHTML(true);  
             $mail->Subject =  $subject;
             $mail->Body    = $data;
-            if(!$mail->send()){
-                echo 'Email has been sent successfully';
+            $mail->send();
+            /*if($mail->send()){
+                return true;
             } 
             else {
-                echo 'Something went wrong';
+                return false;
+            }*/
+        }
+        catch (Exception $e) {
+            return back()->with('error','Message could not be sent.');
+        }
+    }
+
+    function sendMailCollabarator($sender_email, $receiver_email, $note)
+    {
+
+        $subject = 'Note shared with you';
+
+        $data = $sender_email.' shared a note with you <br> Note details: '.$note;
+            
+        require '..\vendor\autoload.php';
+        $mail = new PHPMailer(true);
+        try {                                       
+            $mail->isSMTP();                                          
+            $mail->Host       = env('MAIL_HOST');                       
+            $mail->SMTPAuth   = true;                                  
+            $mail->Username   = env('MAIL_USERNAME');                  
+            $mail->Password   = env('MAIL_PASSWORD');                              
+            $mail->SMTPSecure = 'tls'; 
+            $mail->Port       = 587;
+            $mail->setFrom(env('MAIL_USERNAME'), env('MAIL_FROM_NAME')); 
+            $mail->addAddress($receiver_email);
+            $mail->isHTML(true);  
+            $mail->Subject =  $subject;
+            $mail->Body    = $data;
+            if($mail->send()){
+                return true;
+            } 
+            else {
+                return false;
             }
         }
         catch (Exception $e) {

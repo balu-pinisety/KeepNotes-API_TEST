@@ -120,13 +120,16 @@ class NoteTest extends TestCase
          $response->assertStatus(404)->assertJson(['message' => 'Notes not found']);
      }
 
+     /*
+     * Success Status
+     */
     public function test_IfGiven_Registered_EmailId_ShouldValidate_AndReturnSuccessStatus()
     {
         $response = $this->withHeaders([
             'Content-Type' => 'Application/json',
         ])->json('POST', '/api/auth/forgotpasssword', 
         [
-            "email" => "sathramnithin@gmail.com",
+            "email" => "balupinisetty@gmail.com",
         ]);
 
         $response->assertStatus(200)->assertJson(['message' => 'we have emailed your password reset link to respective mail']);

@@ -75,7 +75,7 @@ class AuthenticationTest extends TestCase
             "password" => "sample@123",
         ]);
 
-        $response->assertStatus(401)->assertJson(['message' => 'we can not find the user with that e-mail address']);
+        $response->assertStatus(404)->assertJson(['message' => 'we can not find the user with that e-mail address']);
     }
 
     public function test_IfGiven_AccessToken_ShouldValidate_AndReturnSuccessStatus()
@@ -86,5 +86,15 @@ class AuthenticationTest extends TestCase
         ])->json('POST', '/api/auth/logout');
         
         $response->assertStatus(201)->assertJson(['message'=> 'User successfully signed out']);
+    }
+
+    public function test_IfGiven_ForgottenMail_ShouldValidate_AndReturnSuccessStatus()
+    {
+        $response = $this->withHeaders([
+            'Content-Type' => 'Application/json',
+            'email' => 'balupinisetty@gmail.com'
+        ])->json('POST', '/api/auth/forgotpassword');
+        
+        $response->assertStatus(200)->assertJson(['message'=> 'we have emailed your password reset link to respective mail']);
     }
 }

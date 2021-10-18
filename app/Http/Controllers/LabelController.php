@@ -16,7 +16,7 @@ class LabelController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'note_id' => 'required',
-            'labelname' => 'required|string|between:2,20',
+            'labelname' => 'required|string|between:2,30',
         ]);
 
         if($validator->fails())
@@ -142,14 +142,15 @@ class LabelController extends Controller
 
     public function getAllLabels()
     {
-        $labels = new Label();
-        $labels->user_id = auth()->id();
+        //$labels = new Label();
+        //$labels->user_id = auth()->id();
+        $User = JWTAuth::parseToken()->authenticate();
 
-        if ($labels->user_id == auth()->id()) 
+        if ($User) 
         {
             $user = Label::select('id', 'labelname')
                 ->where([
-                    ['user_id', '=', $labels->user_id],
+                    ['user_id', '=', $User->id],
                 ])
                 ->get();
             if ($user=='[]'){
@@ -170,20 +171,31 @@ class LabelController extends Controller
         ]);
     }
 
-    public function getNotesByLabel(Request $request)
+    public function getLabelsByNote(Request $request)
     {
-        $labels = new Label();
-        $labels->user_id = auth()->id();
+        //$labels = new Label();
+        //$labels->user_id = auth()->id();
+        $User = JWTAuth::parseToken()->authenticate();
 
-        $labelname = $request->get('labelname');
+        //$note_id = $request->input('note_id');
 
-        if ($labels->user_id == auth()->id()) 
+        if ($User) 
         {
-            return Label::select('id', 'labelname')
+            $userLabels = Label::select('id', 'labelname')
                 ->where([
-                    ['labelname', '=', $labelname]
+                    ['note_id', '=', $request->input('note_id')]
                 ])
                 ->get();
+            if ($userLabels=='[]'){
+                return response()->json([
+                    'message' => 'No Labels'
+                ], 404);
+            }
+            return
+            response()->json([
+                'message' => 'Fetched Labels Successfully',
+                'Labels' => $userLabels
+            ], 201);
         }
         return response()->json([
             'status' => 403, 

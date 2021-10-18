@@ -5,21 +5,23 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Note extends Model
+class Collabarator extends Model
 {
     use HasFactory;
-    
-    protected $table="notes";
-    protected $fillable = ['title','description'];
-   
+
+    protected $table="collabarators";
+    protected $fillable = [
+        'email',
+    ];
 
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
-    public function label()
+    public function note()
     {
-        return $this->belongsTo(Label::class);
+        return $this->belongsTo(Note::class);
     }
+
 }

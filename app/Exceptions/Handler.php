@@ -3,6 +3,7 @@
 namespace App\Exceptions;
 
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -34,8 +35,16 @@ class Handler extends ExceptionHandler
      */
     public function register()
     {
-        $this->reportable(function (Throwable $e) {
-            //
+        $this->renderable(function (NotFoundHttpException $e) {
+            return response()->json([
+                        'message' => 'we can not find the user with that e-mail address'
+                    ], 404);
+        });
+
+        $this->renderable(function (RepeatedMailException $e) {
+            return response()->json([
+                    'message' => 'The email has already been taken'
+                ],401);
         });
     }
 }

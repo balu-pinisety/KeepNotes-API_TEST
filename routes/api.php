@@ -6,6 +6,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ForgotPasswordController;
 use App\Http\Controllers\NoteController;
 use App\Http\Controllers\LabelController;
+use App\Http\Controllers\CollabaratorController;
 
 /*
 |--------------------------------------------------------------------------
@@ -18,9 +19,9 @@ use App\Http\Controllers\LabelController;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
+// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+//     return $request->user();
+// });
 
 Route::group([
     'middleware' => 'api',
@@ -46,6 +47,31 @@ Route::group([
     Route::put('updatelabel', [LabelController::class, 'updateLabelById']);
     Route::post('deletelabel', [LabelController::class, 'deleteLabelById']);
     Route::get('fetchlabels', [LabelController::class, 'getAllLabels']);
-    Route::get('notesByLabel', [LabelController::class, 'getNotesByLabel']);
-   
+    Route::get('labelByNote', [LabelController::class, 'getLabelsByNote']);
+
+    Route::get('noteLabel', [NoteController::class, 'getAllNotesLabels']);
+
+    Route::post('pin', [NoteController::class, 'pinNote']);
+    Route::get('allpins', [NoteController::class, 'getAllPins']);
+
+    Route::post('archive', [NoteController::class, 'archiveNote']);
+    Route::get('allarchives', [NoteController::class, 'getAllArchive']);
+
+    Route::post('colour', [NoteController::class, 'colourNote']);
+    Route::get('ColouredNotes', [NoteController::class, 'getColouredNotes']);
+
+    Route::get('paginatenote', [NoteController::class, 'getpaginateNoteData']);
+
+    Route::post('addcollabarator', [CollabaratorController::class, 'addCollabatorByNoteId']);
+    Route::put('updateNotecollabarator', [CollabaratorController::class, 'updateNoteByCollabarator']);
+    Route::post('deletecollabarator', [CollabaratorController::class, 'deleteCollabaratorNote']);
+    Route::get('allCollabarataors', [CollabaratorController::class, 'getAllCollabarators']);
+
+    Route::get('search', [NoteController::class, 'getSearch']);
+
 }); 
+
+Route::fallback(function(){
+    return response()->json([
+        'message' => 'Page Not Found. If error persists, check the Route URL'], 404);
+});
