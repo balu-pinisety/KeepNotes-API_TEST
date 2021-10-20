@@ -43,6 +43,7 @@ Route::group([
     Route::get('fetchnotes', [NoteController::class, 'getAllNotes']);
     
     Route::post('createlabel', [LabelController::class, 'createLabel']);
+    Route::post('addlabel', [LabelController::class, 'addLabel']);
     Route::post('displaylabel', [LabelController::class, 'displayLabelById']);
     Route::put('updatelabel', [LabelController::class, 'updateLabelById']);
     Route::post('deletelabel', [LabelController::class, 'deleteLabelById']);

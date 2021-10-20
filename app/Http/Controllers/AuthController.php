@@ -65,11 +65,11 @@ class AuthController extends Controller
         {
             Log::alert('Existing Mail given for Register',['Email'=>$request->email]);
 
-            throw new RepeatedMailException();
+            //throw new RepeatedMailException();
 
-            // return response()->json([
-            //     'message' => 'The email has already been taken'
-            // ],401);
+            return response()->json([
+                'message' => 'The email has already been taken'
+            ],401);
         }
 
         $user = User::create(array_merge(
@@ -162,21 +162,19 @@ class AuthController extends Controller
     public function logout() 
     {
         try{
-        auth()->logout();
+        if(auth()->logout())
+        {
+            return response()->json([
+                'message' => 'User successfully signed out'
+            ],201);
+        }
         } 
         catch (Exception $e) 
 		{
             return response()->json([
-                'status' => 404, 
                 'message' => 'Invalid authorization token'
             ], 404);
         }
-
-    
-        return response()->json([
-            'message' => 'User successfully signed out'
-        ],201);
-
         
     }
 

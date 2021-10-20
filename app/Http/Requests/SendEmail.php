@@ -18,7 +18,6 @@ class SendEmail
 
         $data = 'Token to reset password <br>'.$token;
             
-        require '..\vendor\autoload.php';
         $mail = new PHPMailer(true);
         try {                                       
             $mail->isSMTP();                                          
@@ -33,13 +32,12 @@ class SendEmail
             $mail->isHTML(true);  
             $mail->Subject =  $subject;
             $mail->Body    = $data;
-            $mail->send();
-            /*if($mail->send()){
+            if($mail->send()){
                 return true;
             } 
             else {
                 return false;
-            }*/
+            }
         }
         catch (Exception $e) {
             return back()->with('error','Message could not be sent.');

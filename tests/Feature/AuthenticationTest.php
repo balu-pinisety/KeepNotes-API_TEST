@@ -27,7 +27,7 @@ class AuthenticationTest extends TestCase
         ])->json('POST', '/api/auth/register', [
             "firstname" => "vidya",
             "lastname" => "gowda",
-            "email" => "vidyagowda@gmail.com",
+            "email" => "vidyagowda123@gmail.com",
             "password" => "Vidya@123",
             "confirm_password" => "Vidya@123"
         ]);
@@ -43,7 +43,7 @@ class AuthenticationTest extends TestCase
         ])->json('POST', '/api/auth/register', [
             "firstname" => "vidya",
             "lastname" => "gowda",
-            "email" => "vidyagowda@gmail.com",
+            "email" => "vidyagowda123@gmail.com",
             "password" => "Vidya@123",
             "confirm_password" => "Vidya@123"
         ]);
@@ -78,23 +78,47 @@ class AuthenticationTest extends TestCase
         $response->assertStatus(404)->assertJson(['message' => 'we can not find the user with that e-mail address']);
     }
 
-    public function test_IfGiven_AccessToken_ShouldValidate_AndReturnSuccessStatus()
+    public function test_IfGiven_LoginAccessToken_ShouldValidate_AndReturnSuccessStatus()
     {
+        $this->withoutExceptionHandling();
         $response = $this->withHeaders([
             'Content-Type' => 'Application/json',
-            'Authorization' => 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC8xMjcuMC4wLjE6ODAwMFwvYXBpXC9hdXRoXC9sb2dpbiIsImlhdCI6MTYzMzQwNTA5OSwiZXhwIjoxNjMzNDA4Njk5LCJuYmYiOjE2MzM0MDUwOTksImp0aSI6IjBqa3E2czZ0dldFZkhFdUwiLCJzdWIiOjEsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjcifQ.UuO5NcMmIkoyspv65keSXcK9fktH7PyG7zY4u80o2dQ'
+            'Authorization' => 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC8xMjcuMC4wLjE6ODAwMFwvYXBpXC9hdXRoXC9sb2dpbiIsImlhdCI6MTYzNDYzMzkxMCwiZXhwIjoxNjM0NjM3NTEwLCJuYmYiOjE2MzQ2MzM5MTAsImp0aSI6InJtVTYwT0ZYVElRcm5TcmQiLCJzdWIiOjEsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjcifQ.5-f-AMv7vwpNTf8bwREZcZWihx5-cYcJ0__GSon4iDA'
         ])->json('POST', '/api/auth/logout');
         
         $response->assertStatus(201)->assertJson(['message'=> 'User successfully signed out']);
+    }
+
+    public function test_IfGiven_WrongLoginAccessToken_ShouldValidate_AndReturnErrorStatus()
+    {
+        $this->withoutExceptionHandling();
+        $response = $this->withHeaders([
+            'Content-Type' => 'Application/json',
+            'Authorization' => 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOlwvXC8xMjcuMC4wLjE6ODAwMFwvYXBpXC9hdXRoXC9sb2dpbiIsImlhdCI6MTYzNDYzMzkxMCwiZXhwIjoxNjM0NjM3NTEwLCJuYmYiOjE2MzQ2MzM5MTAsImp0aSI6InJtVTYwT0ZYVElRcm5TcmQiLCJzdWIiOjEsInBydiI6IjIzYmQ1Yzg5NDlmNjAwYWRiMzllNzAxYzQwMDg3MmRiN2E1OTc2ZjcifQ.5-f-AMv7vwpNTf8bwREZcZWihx5-cYcJ0__GSon4iDA'
+        ])->json('POST', '/api/auth/logout');
+        
+        $response->assertStatus(404)->assertJson(['message'=> 'Invalid authorization token']);
     }
 
     public function test_IfGiven_ForgottenMail_ShouldValidate_AndReturnSuccessStatus()
     {
         $response = $this->withHeaders([
             'Content-Type' => 'Application/json',
-            'email' => 'balupinisetty@gmail.com'
-        ])->json('POST', '/api/auth/forgotpassword');
+        ])->json('POST', '/api/auth/forgotpassword', [
+            "email" => "balupinisetty@gmail.com"
+        ]);
         
-        $response->assertStatus(200)->assertJson(['message'=> 'we have emailed your password reset link to respective mail']);
+        $response->assertStatus(205)->assertJson(['message'=> 'we have emailed your password reset link to respective mail']);
+    }
+
+    public function test_IfGiven_WrongForgottenMail_ShouldValidate_AndReturnErrorStatus()
+    {
+        $response = $this->withHeaders([
+            'Content-Type' => 'Application/json',
+        ])->json('POST', '/api/auth/forgotpassword', [
+            "email" => "balu@gmail.com"
+        ]);
+        
+        $response->assertStatus(404)->assertJson(['message'=> 'we can not find a user with that email address']);
     }
 }

@@ -23,7 +23,7 @@ class ForgotPasswordController extends Controller
     public function forgotPassword(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'email' => 'required|string|email|max:100|unique:users',
+            'email' => 'required|string|email|max:100',
         ]);
 
         $user = User::where('email', $request->email)->first();
@@ -50,7 +50,7 @@ class ForgotPasswordController extends Controller
             $sendEmail->sendMail($user->email,$passwordReset->token);
         }
 
-        return response()->json(['status' => 200, 'message' => 'we have emailed your password reset link to respective mail']);
+        return response()->json(['message' => 'we have emailed your password reset link to respective mail'],205);
 
     }
 

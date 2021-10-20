@@ -58,7 +58,7 @@ class NoteController extends Controller
 
             $usernotes = Note::leftJoin('collabarators', 'collabarators.note_id', '=', 'notes.id')->leftJoin('labels', 'labels.note_id', '=', 'notes.id')
             ->select('notes.id','notes.title','notes.description','notes.pin','notes.archive','notes.colour','collabarators.email as Collabarator','labels.labelname')
-            /*->where('notes.pin','=','1')->where('notes.archive','=','0')*/
+            ->where('notes.pin','=','0')->where('notes.archive','=','0')
             ->where('notes.user_id','=',$currentUser->id)
             ->orWhere('collabarators.email','=',$currentUser->email)
             ->get();
@@ -289,7 +289,7 @@ class NoteController extends Controller
 
         if ($notes->user_id == auth()->id()) 
         {
-            $usernotes = Note::select('id', 'title', 'description')
+            $usernotes = Note::select('id', 'title', 'description', 'pin', 'archive')
                 ->where([
                     ['user_id', '=', $notes->user_id],['pin','=', 1]
                 ])
@@ -359,7 +359,7 @@ class NoteController extends Controller
 
         if ($notes->user_id == auth()->id()) 
         {
-            $usernotes = Note::select('id', 'title', 'description')
+            $usernotes = Note::select('id', 'title', 'description', 'archive', 'pin')
                 ->where([
                     ['user_id', '=', $notes->user_id],['Archive','=', 1]
                 ])
