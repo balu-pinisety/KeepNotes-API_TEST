@@ -102,29 +102,15 @@ class AuthController extends Controller
             return response()->json($validator->errors(), 422);
         }
 
-        //$user = User::where('email', $request->email)->first();
+        $user = User::where('email', $request->email)->first();
 
-        // if(!$user)
-        // {
-        //     Log::alert('Unregistered Mail given for Login',['Email'=>$request->email]);
-        //     return response()->json([
-        //         'message' => 'we can not find the user with that e-mail address'
-        //     ], 401);
-        // }
-
-        //  try 
-        // {
-            $user = User::where('email', $request->email)->first(); 
-            
-            if(!$user)
-            {
-                throw new NotFoundHttpException();
-            }            
-        // }
-        // catch (NotFoundHttpException $ex)
-        // {
-        //     return $ex->getMessage();
-        // }
+        if(!$user)
+        {
+            Log::alert('Unregistered Mail given for Login',['Email'=>$request->email]);
+            return response()->json([
+                'message' => 'we can not find the user with that e-mail address'
+            ], 401);
+        }
 
         if (!$token = auth()->attempt($validator->validated()))
         {
@@ -162,12 +148,7 @@ class AuthController extends Controller
     public function logout() 
     {
         try{
-        if(auth()->logout())
-        {
-            return response()->json([
-                'message' => 'User successfully signed out'
-            ],201);
-        }
+            auth()->logout();
         } 
         catch (Exception $e) 
 		{
@@ -175,7 +156,9 @@ class AuthController extends Controller
                 'message' => 'Invalid authorization token'
             ], 404);
         }
-        
+        return response()->json([
+            'message'=> 'User successfully signed out'
+        ], 201);
     }
 
     /**
